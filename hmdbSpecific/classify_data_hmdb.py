@@ -24,7 +24,7 @@ l_cats = sp.array(['brush_hair','cartwheel','catch','chew','clap','climb','climb
 
 REGULARIZATION_VALUE = 1E4
 N_SAMPLES = 15# 571741    %GUZEL SONUC 7 sample, 100 feat gamma=0.000001
-N_FEATURES  = 7000 #1000
+N_FEATURES  = 1000 #1000
 l_c = [1E-4, 1E-3, 1E-2, 1E-1, 1, 1E1, 1E2]
 l_g = [0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.1, 1, 2]
 #------------------------------------------------------------------------------#
@@ -82,8 +82,8 @@ def getHMDBsplits(table_fname, vidName, vidMode, n_samples = N_SAMPLES, n_featur
         update_progressbar(pbar, i)
     end_progressbar(pbar)
 
-    features_train = sp.array(features_train)#, dtype = 'uint8')
-    features_test = sp.array(features_test)#, dtype = 'uint8')
+    features_train = sp.array(features_train, dtype = 'uint8')
+    features_test = sp.array(features_test, dtype = 'uint8')
     labels_train = sp.array(labels_train)
     labels_test = sp.array(labels_test)
     
