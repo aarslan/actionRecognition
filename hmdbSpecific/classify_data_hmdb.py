@@ -89,8 +89,7 @@ def getHMDBsplits(table_fname, vidName, vidMode, n_samples = N_SAMPLES, n_featur
     
     table.flush()
     h5.close()
-
-    
+    print "feature loading completed"
     return features_train , labels_train, features_test, labels_test
 
 #------------------------------------------------------------------------------#
