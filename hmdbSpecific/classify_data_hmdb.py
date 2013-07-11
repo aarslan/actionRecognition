@@ -24,7 +24,7 @@ l_cats = sp.array(['brush_hair','cartwheel','catch','chew','clap','climb','climb
 
 REGULARIZATION_VALUE = 1E4
 N_SAMPLES = 15# 571741    %GUZEL SONUC 7 sample, 100 feat gamma=0.000001
-N_FEATURES  = 5000 #1000
+N_FEATURES  = 7500 #1000
 l_c = [1E-4, 1E-3, 1E-2, 1E-1, 1, 1E1, 1E2]
 l_g = [0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.1, 1, 2]
 #------------------------------------------------------------------------------#
@@ -145,13 +145,13 @@ def svm_cla_sklearn_feat_sel(features_train, features_test, labels_train, labels
     
     features_train = selector.transform(features_train)
     features_test = selector.transform(features_test)
-    import ipdb; ipdb.set_trace()
+    #import ipdb; ipdb.set_trace()
     mem = Memory(cachedir='tmp')
     classif_RBF2 = mem.cache(classif_RBF)
 
     c = l_c[0]
     Parallel(n_jobs=-2, verbose=1)(delayed(classif_RBF2)(features_train, features_test, labels_train, labels_test, g, c) for g in l_g)
-    import ipdb; ipdb.set_trace()
+    #import ipdb; ipdb.set_trace()
 
 #------------------------------------------------------------------------------#
 def features_preprocessing(features, mean_f = None, std_f = None):
