@@ -82,10 +82,12 @@ def getHMDBsplits(table_fname, vidName, vidMode, n_samples = N_SAMPLES, n_featur
         update_progressbar(pbar, i)
     end_progressbar(pbar)
 
+    print 'Converting arrays to sp'
     features_train = sp.array(features_train, dtype = 'uint8')
     features_test = sp.array(features_test, dtype = 'uint8')
     labels_train = sp.array(labels_train)
     labels_test = sp.array(labels_test)
+    print 'Converted'
     
     table.flush()
     h5.close()
