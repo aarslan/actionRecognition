@@ -28,7 +28,6 @@ l_cats = sp.array(['brush_hair','cartwheel','catch','chew','clap','climb','climb
 REGULARIZATION_VALUE = 1E4
 N_SAMPLES = 10# 571741    %GUZEL SONUC 7 sample, 100 feat gamma=0.000001
 N_FEATURES  = 3000 #1000
-N_FEATURES_KEEP = 200
 l_c = [1E-4, 1E-3, 1E-2, 1E-1, 1, 1E1, 1E2]
 #------------------------------------------------------------------------------#
 def getHMDBsplits(table_fname, vidName, vidMode, n_samples = N_SAMPLES, n_features = N_FEATURES):
@@ -137,69 +136,24 @@ def svm_cla_sklearn_feat_sel(features_train, features_test, labels_train, labels
     tic = time.time()
     features_train, mean_f, std_f = features_preprocessing(features_train)
     features_test, mean_f, std_f  = features_preprocessing(features_test, mean_f, std_f)
-    #print "time taken to zscore data is:", time.time() - tic , "seconds"
+    print "time taken to zscore data is:", round(time.time() - tic) , "seconds"
     
     featSize = np.shape(features_train)
-    print 'Starting with %d samp, %d feats, keeping %d' % (featSize[0], featSize[1], N_FEATURES_KEEP)
     selector = LinearSVC(C=0.001, penalty="l1", dual=False).fit(features_train, labels_train)
-    
-    print 'Selected %d features' % (np.shape(selector.transform(features_train)))[1]
-    
-    print 'classifying'
-    for c in l_c:
-#        tic = time.time()
-        clf = SVC(C=c) #gamma 1=> 0.027 verdi 10 ==> ~0.03
-#        clf.fit(features_train, labels_train) #[:1960][:]
-#        score = clf.score(features_test, labels_test) #[:13841][:]
-#        print "unselected score for C,",c, "is: ", score
-#        print "time taken:", time.time() - tic, "seconds"
-        import ipdb; ipdb.set_trace()
-        tic = time.time()
-        clf.fit(selector.transform(features_train), labels_train) #[:1960][:]
-        score = clf.score(selector.transform(features_test), labels_test) #[:13841][:]
-        print "selected score for C,",c, "is: ", score
-        print "time taken:", time.time() - tic, "seconds"
-        import ipdb; ipdb.set_trace()
 
-#------------------------------------------------------------------------------#
-def svm_cla_sklearn_feat_sel_trees(features_train, features_test, labels_train, labels_test):
-    from sklearn.ensemble import ExtraTreesClassifier
-    
-    features_train = sp.array(features_train, dtype = 'float64')
-    features_test = sp.array(features_test, dtype = 'float64')
-    
-    print "zscore features"
-    #tic = time.time()
-    features_train_prep, mean_f, std_f = features_preprocessing(features_train)
-    features_test_prep, mean_f, std_f  = features_preprocessing(features_test, mean_f, std_f)
-    #print "time taken to zscore data is:", time.time() - tic , "seconds"
-    
-    featSize = np.shape(features_train_prep)
-    print 'Starting with %d samp, %d feats, keeping %d' % (featSize[0], featSize[1], N_FEATURES_KEEP)
-    
-    n_jobs = 2
-    print "Fitting ExtraTreesClassifier on faces data with %d cores..." % n_jobs
-    tic = time.time()
-    forest = ExtraTreesClassifier(n_estimators=N_FEATURES_KEEP,
-                              compute_importances=True,
-                              n_jobs=n_jobs,
-                              random_state=0)
-    annen, labels_train_enum = np.unique(labels_train, return_inverse = True)
-    forest.fit(features_train_prep, labels_train_enum)
-    import ipdb; ipdb.set_trace()
-    print "done in %0.3fs" % time.time() - tic
-    importances = forest.feature_importances_
-    
+    print 'Starting with %d samp, %d feats, keeping %d' % (featSize[0], featSize[1], (np.shape(selector.transform(features_train)))[1])
     print 'classifying'
-    #import ipdb; ipdb.set_trace()
+    
+    features_train = selector.transform(features_train)
+    features_test = selector.transform(features_test)
     
     for c in l_c:
         tic = time.time()
         clf = SVC(C=c) #gamma 1=> 0.027 verdi 10 ==> ~0.03
-        clf.fit(selector.transform(features_train_prep), labels_train) #[:1960][:]
-        score = clf.score(selector.transform(features_test_prep), labels_test) #[:13841][:]
-        #score = clf.score(features_test_prep, labels_test)
-        print "score for C,",c, "is: ", score
+        clf.fit(features_train, labels_train) #[:1960][:]
+        score = clf.score(features_test, labels_test) #[:13841][:]
+        tic = time.time()
+        print "selected score for C,",c, "is: ", score
         print "time taken:", time.time() - tic, "seconds"
         import ipdb; ipdb.set_trace()
 
