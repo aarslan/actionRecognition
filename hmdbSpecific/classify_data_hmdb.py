@@ -178,7 +178,6 @@ def features_preprocessing(features, mean_f = None, std_f = None):
 def parseHMDBSplits(splitPath, splitNo):
     import glob
     files = glob.glob( splitPath + '*'+ str(splitNo) +'.txt')
-    import ipdb; ipdb.set_trace()
     vidMode = []
     vidName = []
     for ff in range(0,len(files)):
