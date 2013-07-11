@@ -180,6 +180,7 @@ def parseHMDBSplits(splitPath, splitNo):
     files = glob.glob( splitPath + '*'+ str(splitNo) +'.txt')
     vidMode = []
     vidName = []
+    import ipdb; ipdb.set_trace()
     for ff in range(0,len(files)):
         #inexing'i falan yap burda
         fName = files[ff]
@@ -214,7 +215,7 @@ def main():
         splitPath = '/Users/aarslan/Desktop/hmdb_ClassifData/testTrainMulti_7030_splits/'
     else:
         splitPath = '/home/aarslan/prj/data/hmdb_Classif/testTrainMulti_7030_splits/'
-
+    import ipdb; ipdb.set_trace()
     vidName, vidMode = parseHMDBSplits(splitPath, 1)
     
     features_train , labels_train, features_test, labels_test = getHMDBsplits(table_fname, vidName, vidMode, n_samples, n_features)
