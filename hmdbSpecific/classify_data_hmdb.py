@@ -214,7 +214,7 @@ def main():
     if platform.node() != 'g6':
         splitPath = '/Users/aarslan/Desktop/hmdb_ClassifData/testTrainMulti_7030_splits/'
     else:
-        splitPath = '/home/aarslan/prj/data/hmdb_Classif/testTrainMulti_7030_splits/'
+        splitPath = '/home/aarslan/prj/data/hmdb_ClassifData/testTrainMulti_7030_splits/'
     import ipdb; ipdb.set_trace()
     vidName, vidMode = parseHMDBSplits(splitPath, 1)
     
