@@ -2,8 +2,6 @@
 """string"""
 
 import h5py
-import scipy as sp
-
 import hmax
 from hmax.classification import kernel
 #from shogun import Kernel, Classifier, Features
@@ -12,23 +10,23 @@ import scipy as sp
 import numpy as np
 from scipy import io
 import tables as ta
-from sklearn.svm import SVC
-from sklearn.svm import LinearSVC
+from sklearn.svm import SVC, LinearSVC
 import random
 from  matplotlib import pyplot as plt
-
-
+from joblib import Parallel, Memory, delayed
 import time
 import argparse
+from aux_functions import classif_RBF
 
 
 l_cats = sp.array(['brush_hair','cartwheel','catch','chew','clap','climb','climb_stairs','dive', 'draw_sword','dribble','drink','eat','fall_floor','fencing','flic_flac','golf','handstand','hit','hug', 'jump','kick','kick_ball','kiss','laugh','pick','pour','pullup','punch','push','pushup','ride_bike', 'ride_horse','run','shake_hands','shoot_ball','shoot_bow','shoot_gun','sit','situp','smile','smoke', 'somersault','stand','swing_baseball','sword','sword_exercise','talk','throw','turn','walk','wave'], dtype='|S17')
 
 
 REGULARIZATION_VALUE = 1E4
-N_SAMPLES = 10# 571741    %GUZEL SONUC 7 sample, 100 feat gamma=0.000001
-N_FEATURES  = 3000 #1000
+N_SAMPLES = 5# 571741    %GUZEL SONUC 7 sample, 100 feat gamma=0.000001
+N_FEATURES  = 10 #1000
 l_c = [1E-4, 1E-3, 1E-2, 1E-1, 1, 1E1, 1E2]
+l_g = [0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.1, 1, 2]
 #------------------------------------------------------------------------------#
 def getHMDBsplits(table_fname, vidName, vidMode, n_samples = N_SAMPLES, n_features = N_FEATURES):
 
@@ -138,24 +136,21 @@ def svm_cla_sklearn_feat_sel(features_train, features_test, labels_train, labels
     features_test, mean_f, std_f  = features_preprocessing(features_test, mean_f, std_f)
     print "time taken to zscore data is:", round(time.time() - tic) , "seconds"
     
-    featSize = np.shape(features_train)
-    selector = LinearSVC(C=0.001, penalty="l1", dual=False).fit(features_train, labels_train)
+#    featSize = np.shape(features_train)
+#    selector = LinearSVC(C=0.001, penalty="l1", dual=False).fit(features_train, labels_train)
+#
+#    print 'Starting with %d samp, %d feats, keeping %d' % (featSize[0], featSize[1], (np.shape(selector.transform(features_train)))[1])
+#    print 'classifying'
+#    
+#    features_train = selector.transform(features_train)
+#    features_test = selector.transform(features_test)
+    import ipdb; ipdb.set_trace()
+    mem = Memory(cachedir='tmp')
+    classif_RBF2 = mem.cache(classif_RBF)
 
-    print 'Starting with %d samp, %d feats, keeping %d' % (featSize[0], featSize[1], (np.shape(selector.transform(features_train)))[1])
-    print 'classifying'
-    
-    features_train = selector.transform(features_train)
-    features_test = selector.transform(features_test)
-    
-    for c in l_c:
-        tic = time.time()
-        clf = SVC(C=c) #gamma 1=> 0.027 verdi 10 ==> ~0.03
-        clf.fit(features_train, labels_train) #[:1960][:]
-        score = clf.score(features_test, labels_test) #[:13841][:]
-        tic = time.time()
-        print "selected score for C,",c, "is: ", score
-        print "time taken:", time.time() - tic, "seconds"
-        import ipdb; ipdb.set_trace()
+    c = l_c[0]
+    Parallel(n_jobs=-2, verbose=1)(delayed(classif_RBF2)(features_train, features_test, labels_train, labels_test, g, c) for g in l_g)
+    import ipdb; ipdb.set_trace()
 
 #------------------------------------------------------------------------------#
 def features_preprocessing(features, mean_f = None, std_f = None):
@@ -180,7 +175,6 @@ def parseHMDBSplits(splitPath, splitNo):
     files = glob.glob( splitPath + '*'+ str(splitNo) +'.txt')
     vidMode = []
     vidName = []
-    import ipdb; ipdb.set_trace()
     for ff in range(0,len(files)):
         #inexing'i falan yap burda
         fName = files[ff]
@@ -215,7 +209,6 @@ def main():
         splitPath = '/Users/aarslan/Desktop/hmdb_ClassifData/testTrainMulti_7030_splits/'
     else:
         splitPath = '/home/aarslan/prj/data/hmdb_ClassifData/testTrainMulti_7030_splits/'
-    import ipdb; ipdb.set_trace()
     vidName, vidMode = parseHMDBSplits(splitPath, 1)
     
     features_train , labels_train, features_test, labels_test = getHMDBsplits(table_fname, vidName, vidMode, n_samples, n_features)
