@@ -24,7 +24,7 @@ l_cats = sp.array(['brush_hair','cartwheel','catch','chew','clap','climb','climb
 
 REGULARIZATION_VALUE = 1E4
 N_SAMPLES = 15# 571741    %GUZEL SONUC 7 sample, 100 feat gamma=0.000001
-N_FEATURES  = 1000 #1000
+N_FEATURES  = 5000 #1000
 l_c = [1E-4, 1E-3, 1E-2, 1E-1, 1, 1E1, 1E2]
 l_g = [0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.1, 1, 2]
 #------------------------------------------------------------------------------#
@@ -136,7 +136,7 @@ def svm_cla_sklearn_feat_sel(features_train, features_test, labels_train, labels
     print "time taken to zscore data is:", round(time.time() - tic) , "seconds"
     
     featSize = np.shape(features_train)
-    selector = LinearSVC(C=0.001, penalty="l1", dual=False).fit(features_train, labels_train)
+    selector = LinearSVC(C=0.0005, penalty="l1", dual=False).fit(features_train, labels_train)
 
     print 'Starting with %d samp, %d feats, keeping %d' % (featSize[0], featSize[1], (np.shape(selector.transform(features_train)))[1])
     print 'classifying'
