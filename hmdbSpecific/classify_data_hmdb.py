@@ -24,9 +24,9 @@ l_cats = sp.array(['brush_hair','cartwheel','catch','chew','clap','climb','climb
 
 REGULARIZATION_VALUE = 1E4
 N_SAMPLES = 15# 571741    %GUZEL SONUC 7 sample, 100 feat gamma=0.000001
-N_FEATURES  = 7500 #1000
+N_FEATURES  = 1000 #1000
 l_c = [1E-4, 1E-3, 1E-2, 1E-1, 1, 1E1, 1E2]
-l_g = [0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.1, 1, 2]
+l_g = pow(2,np.linspace(-15, -5,16))
 #------------------------------------------------------------------------------#
 def getHMDBsplits(table_fname, vidName, vidMode, n_samples = N_SAMPLES, n_features = N_FEATURES):
 
@@ -138,7 +138,7 @@ def svm_cla_sklearn_feat_sel(features_train, features_test, labels_train, labels
     print "time taken to zscore data is:", round(time.time() - tic) , "seconds"
     
     featSize = np.shape(features_train)
-    selector = LinearSVC(C=0.0005, penalty="l1", dual=False).fit(features_train, labels_train)
+    selector = LinearSVC(C=0.0007, penalty="l1", dual=False).fit(features_train, labels_train)
 
     print 'Starting with %d samp, %d feats, keeping %d' % (featSize[0], featSize[1], (np.shape(selector.transform(features_train)))[1])
     print 'classifying'
@@ -150,8 +150,16 @@ def svm_cla_sklearn_feat_sel(features_train, features_test, labels_train, labels
     classif_RBF2 = mem.cache(classif_RBF)
 
     c = l_c[0]
-    Parallel(n_jobs=-2, verbose=1)(delayed(classif_RBF2)(features_train, features_test, labels_train, labels_test, g, c) for g in l_g)
+    Parallel(n_jobs=-2)(delayed(classif_RBF2)(features_train, features_test, labels_train, labels_test, g, c) for g in l_g)
     #import ipdb; ipdb.set_trace()
+
+    print "Starting CONTROL classification for c = ", c
+    tic = time.time()
+    clf = SVC(C=c)
+    clf.fit(features_train, labels_train) #[:1960][:]
+    score = clf.score(features_test, labels_test) #[:13841][:]
+    print "selected CONTROL score for c = ", c, "is: ", score
+    print "time taken:", time.time() - tic, "seconds"
 
 #------------------------------------------------------------------------------#
 def features_preprocessing(features, mean_f = None, std_f = None):

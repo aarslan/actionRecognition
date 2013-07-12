@@ -9,6 +9,5 @@ def classif_RBF(features_train, features_test, labels_train, labels_test, gamma,
     clf = SVC(gamma=gamma, C=c)
     clf.fit(features_train, labels_train) #[:1960][:]
     score = clf.score(features_test, labels_test) #[:13841][:]
-    tic = time.time()
     print "selected score for G=",gamma, ", c = ", c, "is: ", score
-    print "time taken:", time.time() - tic, "seconds"
+    print "time taken:", round(time.time() - tic), "seconds"
