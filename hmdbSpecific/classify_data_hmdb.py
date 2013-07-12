@@ -24,7 +24,7 @@ l_cats = sp.array(['brush_hair','cartwheel','catch','chew','clap','climb','climb
 
 REGULARIZATION_VALUE = 1E4
 N_SAMPLES = 15# 571741    %GUZEL SONUC 7 sample, 100 feat gamma=0.000001
-N_FEATURES  = 1000 #1000
+N_FEATURES  = 10000 #1000
 l_c = [1E-4, 1E-3, 1E-2, 1E-1, 1, 1E1, 1E2]
 l_g = pow(2,np.linspace(-15, -5,16))
 #------------------------------------------------------------------------------#
@@ -150,7 +150,7 @@ def svm_cla_sklearn_feat_sel(features_train, features_test, labels_train, labels
     classif_RBF2 = mem.cache(classif_RBF)
 
     c = l_c[0]
-    Parallel(n_jobs=-2)(delayed(classif_RBF2)(features_train, features_test, labels_train, labels_test, g, c) for g in l_g)
+    Parallel(n_jobs=8)(delayed(classif_RBF2)(features_train, features_test, labels_train, labels_test, g, c) for g in l_g)
     #import ipdb; ipdb.set_trace()
 
     print "Starting CONTROL classification for c = ", c
