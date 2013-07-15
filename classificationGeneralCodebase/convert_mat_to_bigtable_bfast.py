@@ -22,24 +22,10 @@ def create_empty_table(table_fname):
         frame_index  = ta.Int32Col(shape = (1))
         features     = ta.UInt8Col(shape = (N_FEATURES_TOTAL*N_PARTS))
         label        = ta.StringCol(128)
+        camNames     = ta.StringCol(32)
+        actNames     = ta.StringCol(64)
+        partiNames   = ta.StringCol(4)
     
-    h5    = ta.openFile(table_fname, mode = 'w', title='list of images')
-    group = h5.createGroup("/", 'input_output_data', 'images information')
-    table = h5.createTable(group, 'readout', images, "readout example")
-    #pp = table.row
-    table.flush()
-    h5.close()
-#------------------------------------------------------------------------------#
-def create_empty_table_bfast(table_fname):
-    
-    class images(ta.IsDescription):
-        frame_index  = ta.Int32Col(shape = (1))
-        features     = ta.UInt8Col(shape = (N_FEATURES_TOTAL*N_PARTS))
-        label        = ta.StringCol(128)
-        aviNames     = ta.StringCol(256)
-        camname      = ta.StringCol(16)
-        actname      = ta.StringCol(64)
-        partiname    = ta.StringCol(8)
     
     h5    = ta.openFile(table_fname, mode = 'w', title='list of images')
     group = h5.createGroup("/", 'input_output_data', 'images information')
@@ -48,9 +34,8 @@ def create_empty_table_bfast(table_fname):
     table.flush()
     h5.close()
 
-
 #------------------------------------------------------------------------------#
-def read_mat_files(features_basename, labels_fname, names_fname, camname_fname, actname_fname, partiname_fname):
+def read_mat_files(features_basename, labels_fname, camname_fname, actname_fname, partiname_fname):
     """docstring for read_mat_file"""
     
     print "reading features"
@@ -67,36 +52,41 @@ def read_mat_files(features_basename, labels_fname, names_fname, camname_fname, 
         print nn
     
     print "time taken :", time.time() - tic, 'seconds'
-    
-    
+
+    print "reading participant names"
+    tic = time.time()
+    partiNames = io.loadmat(partiname_fname)['myPartis']
+    partiNames = sp.array([str(partiNames[i][0][0]) for i in xrange(partiNames.shape[0])])
+    print "time taken :", time.time() - tic, 'seconds'
+
     print "reading labels"
     tic = time.time()
     labels = io.loadmat(labels_fname)['labels']
     labels = sp.array([str(labels[i][0][0]) for i in xrange(labels.shape[0])])
     print "time taken :", time.time() - tic, 'seconds'
     
-    print "reading file names"
+    print "reading camera names"
     tic = time.time()
-    aviNames = io.loadmat(names_fname)['myNames']
-    aviNames = sp.array([str(aviNames[i][0][0]) for i in xrange(aviNames.shape[0])])
+    camNames = io.loadmat(camname_fname)['myCams']
+    camNames = sp.array([str(camNames[i][0][0]) for i in xrange(camNames.shape[0])])
     print "time taken :", time.time() - tic, 'seconds'
+
     
-    if camname_fname != '':
-        print "reading camera names"
-        tic = time.time()
-        camNames = io.loadmat(names_fname)['myCams']
-        camNames = sp.array([str(camNames[i][0][0]) for i in xrange(camNames.shape[0])])
-        print "time taken :", time.time() - tic, 'seconds'
-    else:
-    
-    
+    print "reading action names"
+    tic = time.time()
+    actNames = io.loadmat(actname_fname)['myActs']
+    actNames = sp.array([str(actNames[i][0][0]) for i in xrange(actNames.shape[0])])
+    print "time taken :", time.time() - tic, 'seconds'
+            
+
+
     # few sanity checks
     #assert(not features.isnan().any())
     #assert(not features.isinf().any())
     
-    return features, labels, aviNames
+    return features, labels, camNames, actNames, partiNames
 #------------------------------------------------------------------------------#
-def populate_table(table_fname, features, labels, aviNames):
+def populate_table(table_fname, features, labels, camNames, actNames, partiNames):
     
     n_samples = labels.shape[0]
     pbar = start_progressbar(n_samples, '%i features to Pytable' % (n_samples))
@@ -109,13 +99,18 @@ def populate_table(table_fname, features, labels, aviNames):
         pp['frame_index'] = i
         pp['features']    = features[i, :]
         pp['label']       = labels[i]
-        pp['aviNames']    = aviNames[i][0:-4]
+        #pp['aviNames']    = aviNames[i][0:-4]
+        pp['camNames']   = camNames[i]
+        pp['actNames']   = actNames[i]
+        pp['partiNames'] = partiNames[i]
         pp.append()
         update_progressbar(pbar, i)
     
     end_progressbar(pbar)
     # save everything in the file and close it
-    table.cols.aviNames.createIndex()
+    table.cols.camNames.createIndex()
+    table.cols.actNames.createIndex()
+    table.cols.partiNames.createIndex()
     table.flush()
     h5.close()
 
@@ -143,14 +138,10 @@ def main():
     actname_fname = args.actname_fname
     partiname_fname = args.partiname_fname
     
-    if camname_fname == '':
-        print 'no camname provided, building hmdb table'
-    features, labels, aviNames = read_mat_files(features_basename, labels_fname, names_fname, camname_fname, actname_fname, partiname_fname)
-    create_empty_table(table_fname)
-    populate_table(table_fname, features, labels, aviNames)
-    else
-        print 'info provided for bfast table'
 
+    features, labels, camNames, actNames, partiNames = read_mat_files(features_basename, labels_fname, camname_fname, actname_fname, partiname_fname)
+    create_empty_table(table_fname)
+    populate_table(table_fname, features, labels, camNames, actNames, partiNames)
 
 #------------------------------------------------------------------------------#
 if __name__=="__main__":

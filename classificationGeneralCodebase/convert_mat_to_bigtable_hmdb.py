@@ -11,48 +11,30 @@ from scipy import io
 import time
 import h5py
 
-N_PARTS = 15    #HMDB 10
-N_FEATURES_TOTAL = 500 #HMDB 1000
-N_SAMPLES = 5453533 #HMDB 571741 #10000
+N_PARTS = 10
+N_FEATURES_TOTAL = 1000
+N_SAMPLES = 571741 #10000
 
 #------------------------------------------------------------------------------#
 def create_empty_table(table_fname):
-    
-    class images(ta.IsDescription):
-        frame_index  = ta.Int32Col(shape = (1))
-        features     = ta.UInt8Col(shape = (N_FEATURES_TOTAL*N_PARTS))
-        label        = ta.StringCol(128)
-    
-    h5    = ta.openFile(table_fname, mode = 'w', title='list of images')
-    group = h5.createGroup("/", 'input_output_data', 'images information')
-    table = h5.createTable(group, 'readout', images, "readout example")
-    #pp = table.row
-    table.flush()
-    h5.close()
-#------------------------------------------------------------------------------#
-def create_empty_table_bfast(table_fname):
-    
+
     class images(ta.IsDescription):
         frame_index  = ta.Int32Col(shape = (1))
         features     = ta.UInt8Col(shape = (N_FEATURES_TOTAL*N_PARTS))
         label        = ta.StringCol(128)
         aviNames     = ta.StringCol(256)
-        camname      = ta.StringCol(16)
-        actname      = ta.StringCol(64)
-        partiname    = ta.StringCol(8)
-    
+        camname      = ta.StringCol(128)
+
     h5    = ta.openFile(table_fname, mode = 'w', title='list of images')
     group = h5.createGroup("/", 'input_output_data', 'images information')
     table = h5.createTable(group, 'readout', images, "readout example")
     #pp = table.row
     table.flush()
     h5.close()
-
-
 #------------------------------------------------------------------------------#
 def read_mat_files(features_basename, labels_fname, names_fname, camname_fname, actname_fname, partiname_fname):
     """docstring for read_mat_file"""
-    
+
     print "reading features"
     tic = time.time()
     
@@ -65,10 +47,10 @@ def read_mat_files(features_basename, labels_fname, names_fname, camname_fname, 
         temp = sp.array(ff).T
         features = sp.append(features, temp,1)
         print nn
-    
+
     print "time taken :", time.time() - tic, 'seconds'
     
-    
+
     print "reading labels"
     tic = time.time()
     labels = io.loadmat(labels_fname)['labels']
@@ -80,31 +62,22 @@ def read_mat_files(features_basename, labels_fname, names_fname, camname_fname, 
     aviNames = io.loadmat(names_fname)['myNames']
     aviNames = sp.array([str(aviNames[i][0][0]) for i in xrange(aviNames.shape[0])])
     print "time taken :", time.time() - tic, 'seconds'
-    
-    if camname_fname != '':
-        print "reading camera names"
-        tic = time.time()
-        camNames = io.loadmat(names_fname)['myCams']
-        camNames = sp.array([str(camNames[i][0][0]) for i in xrange(camNames.shape[0])])
-        print "time taken :", time.time() - tic, 'seconds'
-    else:
-    
-    
+
     # few sanity checks
     #assert(not features.isnan().any())
     #assert(not features.isinf().any())
-    
+
     return features, labels, aviNames
 #------------------------------------------------------------------------------#
 def populate_table(table_fname, features, labels, aviNames):
-    
+
     n_samples = labels.shape[0]
     pbar = start_progressbar(n_samples, '%i features to Pytable' % (n_samples))
-    
+
     h5 = ta.openFile(table_fname, mode = 'a')
     table = h5.root.input_output_data.readout
     pp = table.row
-    
+
     for i in xrange(n_samples):
         pp['frame_index'] = i
         pp['features']    = features[i, :]
@@ -112,7 +85,7 @@ def populate_table(table_fname, features, labels, aviNames):
         pp['aviNames']    = aviNames[i][0:-4]
         pp.append()
         update_progressbar(pbar, i)
-    
+
     end_progressbar(pbar)
     # save everything in the file and close it
     table.cols.aviNames.createIndex()
@@ -122,35 +95,28 @@ def populate_table(table_fname, features, labels, aviNames):
 #------------------------------------------------------------------------------#
 def main():
     """
-        
-        """
+
+    """
     parser = argparse.ArgumentParser(description="""This file does this and that \n
-        usage: python ./file.py 11 --bla 10  blabla""")
+            usage: python ./file.py 11 --bla 10  blabla""")
     parser.add_argument('--features_basename', type=str, help="""string""")
     parser.add_argument('--labels_fname', type=str, help="""string""")
     parser.add_argument('--table_fname', type=str, help="""string""")
     parser.add_argument('--aviname_fname', type=str, help="""string""")
-    parser.add_argument('--camname_fname', type=str, help="""string""", default = '')
-    parser.add_argument('--actname_fname', type=str, help="""string""", default= '')
-    parser.add_argument('--partiname_fname', type=str, help="""string""", default= '')
     args = parser.parse_args()
-    
+
     features_basename = args.features_basename
     labels_fname = args.labels_fname
     table_fname = args.table_fname
     names_fname = args.aviname_fname
-    camname_fname = args.camname_fname
-    actname_fname = args.actname_fname
-    partiname_fname = args.partiname_fname
     
-    if camname_fname == '':
-        print 'no camname provided, building hmdb table'
+
     features, labels, aviNames = read_mat_files(features_basename, labels_fname, names_fname, camname_fname, actname_fname, partiname_fname)
+    #features = sp.array(255*sp.random.rand(N_FEATURES_TOTAL, 3*N_SAMPLES), dtype = 'int').T
+    #labels = sp.random.randint(low = 0, high = 49, size = 3*N_SAMPLES)
+
     create_empty_table(table_fname)
     populate_table(table_fname, features, labels, aviNames)
-    else
-        print 'info provided for bfast table'
-
 
 #------------------------------------------------------------------------------#
 if __name__=="__main__":
