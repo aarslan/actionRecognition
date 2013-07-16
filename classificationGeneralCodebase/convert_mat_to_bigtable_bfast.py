@@ -46,17 +46,18 @@ def read_mat_files(features_basename, labels_fname, camname_fname, actname_fname
     
     f = h5py.File(features_basename + '_part1.mat', 'r')
     ff = f["myData"]
-    features1 = ff[:,0:N_1STCHUNK].T
-    import ipdb; ipdb.set_trace()
-    features2 = ff[:,N_1STCHUNK+1:N_2NDCHUNK].T
-    features3 = ff[:,N_2NDCHUNK+1:].T
-    features = sp.append(features1, features2,1)
-    features = sp.append(features, features3,1)
+#    features1 = ff[:,0:N_1STCHUNK].T
+#    import ipdb; ipdb.set_trace()
+#    features2 = ff[:,N_1STCHUNK+1:N_2NDCHUNK].T
+#    features3 = ff[:,N_2NDCHUNK+1:].T
+#    features = sp.append(features1, features2,1)
+#    features = sp.append(features, features3,1)
+    features1 = sp.array(ff).T
     import ipdb; ipdb.set_trace()
     for nn in range(2,N_PARTS+1):
         f = h5py.File(features_basename + '_part' + str(nn)+ '.mat', 'r')
         ff = f["myData"]
-        temp = ff.T
+        temp = sp.array(ff).T
         features = sp.append(features, temp,1)
         print nn
     
