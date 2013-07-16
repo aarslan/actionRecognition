@@ -12,7 +12,7 @@ import time
 import h5py
 h5py._errors.unsilence_errors()
 
-N_PARTS = 15    #HMDB 10
+N_PARTS = 20    #HMDB 10
 N_FEATURES_TOTAL = 500 #HMDB 1000
 N_SAMPLES = 5453533 #HMDB 571741 #10000
 N_1STCHUNK = 2000000
