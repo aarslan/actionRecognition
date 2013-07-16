@@ -126,7 +126,6 @@ def main():
     parser.add_argument('--features_basename', type=str, help="""string""")
     parser.add_argument('--labels_fname', type=str, help="""string""")
     parser.add_argument('--table_fname', type=str, help="""string""")
-    parser.add_argument('--aviname_fname', type=str, help="""string""")
     parser.add_argument('--camname_fname', type=str, help="""string""", default = '')
     parser.add_argument('--actname_fname', type=str, help="""string""", default= '')
     parser.add_argument('--partiname_fname', type=str, help="""string""", default= '')
@@ -136,7 +135,6 @@ def main():
     features_basename = data_path + args.features_basename
     labels_fname =  data_path + args.labels_fname
     table_fname = data_path + args.table_fname
-    names_fname = data_path + args.aviname_fname
     camname_fname = data_path + args.camname_fname
     actname_fname = data_path + args.actname_fname
     partiname_fname = data_path + args.partiname_fname
