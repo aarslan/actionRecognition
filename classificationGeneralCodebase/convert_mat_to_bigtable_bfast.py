@@ -15,7 +15,7 @@ import h5py
 N_PARTS = 15    #HMDB 10
 N_FEATURES_TOTAL = 500 #HMDB 1000
 N_SAMPLES = 5453533 #HMDB 571741 #10000
-N_FIRSTCHUNK = 3000000
+N_FIRSTCHUNK = 4000000
 #------------------------------------------------------------------------------#
 def create_empty_table(table_fname):
     
