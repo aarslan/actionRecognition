@@ -43,11 +43,11 @@ def read_mat_files(features_basename, labels_fname, camname_fname, actname_fname
     print "reading features"
     tic = time.time()
     
-    f = h5py.File(features_basename + '_part2.mat', 'r')
+    f = h5py.File(features_basename + '_part1.mat', 'r')
     ff = f["myData"]
     #import ipdb; ipdb.set_trace()
     features = sp.array(ff).T
-    for nn in range(3,N_PARTS+1):
+    for nn in range(2,N_PARTS+1):
         f = h5py.File(features_basename + '_part' + str(nn)+ '.mat', 'r')
         ff = f["myData"]
         temp = sp.array(ff).T
