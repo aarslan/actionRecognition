@@ -16,7 +16,7 @@ h5py._errors.unsilence_errors()
 N_PARTS = 15    #HMDB 10
 N_FEATURES_TOTAL = 500 #HMDB 1000
 N_SAMPLES = 5453533 #HMDB 571741 #10000
-
+N_FIRSTCHUNK = 4000000
 #------------------------------------------------------------------------------#
 def create_empty_table(table_fname):
     
@@ -44,17 +44,15 @@ def read_mat_files(features_basename, labels_fname, camname_fname, actname_fname
     tic = time.time()
     
     f = h5py.File(features_basename + '_part3.mat', 'r')
-    #import ipdb; ipdb.set_trace()
     ff = f["myData"]
-    print ff.shape
-    print ff.chunks
-    print ff.compression
-    print ff.compression_opts
-    features = sp.array(ff).T
+    features1 = ff[:,0:N_FIRSTCHUNK].T
+    features2 = ff[:,N_FIRSTCHUNK+1:].T
+    features = sp.append(features1, features2,1)
+    import ipdb; ipdb.set_trace()
     for nn in range(2,N_PARTS+1):
         f = h5py.File(features_basename + '_part' + str(nn)+ '.mat', 'r')
         ff = f["myData"]
-        temp = sp.array(ff).T
+        temp = ff.T
         features = sp.append(features, temp,1)
         print nn
     
