@@ -122,6 +122,7 @@ def main():
         """
     parser = argparse.ArgumentParser(description="""This file does this and that \n
         usage: python ./file.py 11 --bla 10  blabla""")
+    parser.add_argument('--data_path', type=str, help="""this is the path for all the data files""")
     parser.add_argument('--features_basename', type=str, help="""string""")
     parser.add_argument('--labels_fname', type=str, help="""string""")
     parser.add_argument('--table_fname', type=str, help="""string""")
@@ -131,13 +132,14 @@ def main():
     parser.add_argument('--partiname_fname', type=str, help="""string""", default= '')
     args = parser.parse_args()
     
-    features_basename = args.features_basename
-    labels_fname = args.labels_fname
-    table_fname = args.table_fname
-    names_fname = args.aviname_fname
-    camname_fname = args.camname_fname
-    actname_fname = args.actname_fname
-    partiname_fname = args.partiname_fname
+    data_path = args.data_path
+    features_basename = data_path + args.features_basename
+    labels_fname =  data_path + args.labels_fname
+    table_fname = data_path + args.table_fname
+    names_fname = data_path + args.aviname_fname
+    camname_fname = data_path + args.camname_fname
+    actname_fname = data_path + args.actname_fname
+    partiname_fname = data_path + args.partiname_fname
     
 
     features, labels, camNames, actNames, partiNames = read_mat_files(features_basename, labels_fname, camname_fname, actname_fname, partiname_fname)
