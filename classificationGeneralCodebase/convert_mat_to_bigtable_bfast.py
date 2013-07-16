@@ -45,6 +45,10 @@ def read_mat_files(features_basename, labels_fname, camname_fname, actname_fname
     
     f = h5py.File(features_basename + '_part1.mat', 'r')
     ff = f["myData"]
+    print ff.shape
+    print ff.chunks
+    print ff.compression
+    print ff.compression_opts
     #import ipdb; ipdb.set_trace()
     features = sp.array(ff).T
     for nn in range(2,N_PARTS+1):
