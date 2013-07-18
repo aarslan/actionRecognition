@@ -42,7 +42,7 @@ def read_mat_files(features_basename, labels_fname):
     labels = io.loadmat(labels_fname)['labels']
     labels = sp.array([str(labels[i][0][0]) for i in xrange(labels.shape[0])])
     print "time taken :", time.time() - tic, 'seconds'
-    
+    import ipdb; ipdb.set_trace()
     
     return features, labels
 #------------------------------------------------------------------------------#

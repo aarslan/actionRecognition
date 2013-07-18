@@ -28,8 +28,9 @@ l_cats = sp.array(['crouch', 'crouchrock', 'drink', 'groom_sit', 'motor', 'move'
 REGULARIZATION_VALUE = 1E4
 N_SAMPLES = 15# 571741    %GUZEL SONUC 7 sample, 100 feat gamma=0.000001
 N_FEATURES  = 1441 #1000
+N_LIM = 50
 l_c = [1E-4, 1E-3, 1E-2, 1E-1, 1, 1E1, 1E2]
-l_g = pow(2,np.linspace(-15, -5,16))
+l_g = pow(2,np.linspace(-15, -5, 7))
 #------------------------------------------------------------------------------#
 def getMonkeySplits(table_fname, splitNo, n_samples = N_SAMPLES, n_features = N_FEATURES):
 
@@ -38,13 +39,13 @@ def getMonkeySplits(table_fname, splitNo, n_samples = N_SAMPLES, n_features = N_
     table_tr = h5_tr.root.input_output_data.readout
     
     h5_te = ta.openFile(table_fname + str(splitNo) + '_test.h5', mode = 'r')
-    table_te = h5_tr.root.input_output_data.readout
-
+    table_te = h5_te.root.input_output_data.readout
+    import ipdb; ipdb.set_trace()
     print 'Converting arrays to sp'
-    features_train = sp.array(table_tr.cols.features)
+    features_train = sp.array(table_tr.cols.features)#[:,:N_LIM]
     labels_train = sp.array(table_tr.cols.label)
     
-    features_test = sp.array(table_te.cols.features)
+    features_test = sp.array(table_te.cols.features)#[:,:N_LIM]
     labels_test = sp.array(table_te.cols.label)
 
 #    features_train = sp.array(features_train, dtype = 'uint8')
@@ -139,28 +140,6 @@ def features_preprocessing(features, mean_f = None, std_f = None):
     features /= std_f
 
     return features, mean_f, std_f
-
-#------------------------------------------------------------------------------#
-
-def parseHMDBSplits(splitPath, splitNo):
-    import glob
-    files = glob.glob( splitPath + '*'+ str(splitNo) +'.txt')
-    vidMode = []
-    vidName = []
-    for ff in range(0,len(files)):
-        #inexing'i falan yap burda
-        fName = files[ff]
-        lines = [line.strip() for line in open(fName)]
-        things= [sp.partition(' ') for sp in lines]
-        vidMode.append([])
-        vidName.append([])
-        for ll in things:
-            vidName[ff].append(ll[0][0:-4])
-            vidMode[ff].append(ll[2])
-    
-    print '%d videos were selected' % (len(vidMode))
-    return (vidName, vidMode)
-
 
 #------------------------------------------------------------------------------#
 def main():
