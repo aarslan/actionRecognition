@@ -16,7 +16,7 @@ from  matplotlib import pyplot as plt
 from joblib import Parallel, Memory, delayed
 import time
 import argparse
-#from aux_functions import classif_RBF
+from aux_functions import classif_RBF
 
 
 l_cats = sp.array(['crouch', 'crouchrock', 'drink', 'groom_sit', 'motor', 'move',
@@ -91,8 +91,8 @@ def svm_cla_sklearn_feat_sel(features_train, features_test, labels_train, labels
     from sklearn.cross_validation import StratifiedKFold
     from sklearn.metrics import zero_one_loss
     
-    features_train = sp.array(features_train, dtype = 'uint8')
-    features_test = sp.array(features_test, dtype = 'uint8')
+    #features_train = sp.array(features_train, dtype = 'uint8')
+    #features_test = sp.array(features_test, dtype = 'uint8')
     
     print "zscore features"
     tic = time.time()
@@ -101,7 +101,7 @@ def svm_cla_sklearn_feat_sel(features_train, features_test, labels_train, labels
     print "time taken to zscore data is:", round(time.time() - tic) , "seconds"
     
     featSize = np.shape(features_train)
-    selector = LinearSVC(C=0.0007, penalty="l1", dual=False).fit(features_train, labels_train)
+    selector = LinearSVC(C=0.0005, penalty="l1", dual=False).fit(features_train, labels_train)
 
     print 'Starting with %d samp, %d feats, keeping %d' % (featSize[0], featSize[1], (np.shape(selector.transform(features_train)))[1])
     print 'classifying'
@@ -113,7 +113,7 @@ def svm_cla_sklearn_feat_sel(features_train, features_test, labels_train, labels
     classif_RBF2 = mem.cache(classif_RBF)
 
     c = l_c[0]
-    Parallel(n_jobs=8)(delayed(classif_RBF2)(features_train, features_test, labels_train, labels_test, g, c) for g in l_g)
+    Parallel(n_jobs=7)(delayed(classif_RBF2)(features_train, features_test, labels_train, labels_test, g, c) for g in l_g)
     #import ipdb; ipdb.set_trace()
 
     print "Starting CONTROL classification for c = ", c
@@ -180,8 +180,8 @@ def main():
     
     
     features_train , labels_train, features_test, labels_test = getMonkeySplits(table_fname, splitNo, n_samples, n_features)
-    svm_cla_sklearn(features_train, features_test, labels_train, labels_test)
-    #svm_cla_sklearn_feat_sel(features_train, features_test, labels_train, labels_test)
+    #svm_cla_sklearn(features_train, features_test, labels_train, labels_test)
+    svm_cla_sklearn_feat_sel(features_train, features_test, labels_train, labels_test)
 
 #------------------------------------------------------------------------------#
 if __name__=="__main__":
