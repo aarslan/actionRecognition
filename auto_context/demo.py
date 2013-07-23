@@ -288,7 +288,8 @@ def main():
 
     orig_feats= orig_feats.astype(np.float64)
     allLearners_orig = train_adaboost(orig_feats,orig_labels)
-    confidence_orig = compute_confidence(allLearners_orig, orig_feats)
+    #confidence_orig = compute_confidence(allLearners_orig, orig_feats)
+    confidence_orig = compute_confidence_par(allLearners_orig, orig_feats)
 
     orig_CF_75 = get_contextual_matlab(confidence_orig, 75)
     orig_CF_185 = get_contextual_matlab(confidence_orig, 185)
