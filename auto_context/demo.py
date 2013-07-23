@@ -25,11 +25,11 @@ from pymatlab.matlab import MatlabSession
 
 
 N_LIM = 20
-N_ESTIM = 20 #ANALOGUOUS TO MAXITER IN MTALAB: boosting iterations
+N_ESTIM = 15 #ANALOGUOUS TO MAXITER IN MTALAB: boosting iterations
 learning_rate = 1.
 Sample_N = 1000 #Shengping's
 N_RUNS = 10;
-N_LAB = 3
+N_LAB = 13
 N_JOBS = 8
 
 #------------------------------------------------------------------------------#
@@ -288,8 +288,8 @@ def main():
 
     orig_feats= orig_feats.astype(np.float64)
     allLearners_orig = train_adaboost(orig_feats,orig_labels)
-    #confidence_orig = compute_confidence(allLearners_orig, orig_feats)
-    confidence_orig = compute_confidence_par(allLearners_orig, orig_feats)
+    confidence_orig = compute_confidence(allLearners_orig, orig_feats)
+    #confidence_orig = compute_confidence_par(allLearners_orig, orig_feats)
 
     orig_CF_75 = get_contextual_matlab(confidence_orig, 75)
     orig_CF_185 = get_contextual_matlab(confidence_orig, 185)
@@ -305,8 +305,8 @@ def main():
         test_feats,test_labels = load_training_mats(mat_path, splitNo, 'test')
 
     test_feats= test_feats.astype(np.float64)
-    #confidence_test = compute_confidence(allLearners_orig, test_feats)
-    confidence_test_par = compute_confidence_par(allLearners_orig, test_feats)
+    confidence_test = compute_confidence(allLearners_orig, test_feats)
+    #confidence_test_par = compute_confidence_par(allLearners_orig, test_feats)
 
     
     test_CF_75 = get_contextual_matlab(confidence_test, 75)
@@ -315,8 +315,8 @@ def main():
     test_CF_feats = np.concatenate([test_CF_75, test_CF_185, test_CF_615], axis = 1)
     rich_test_feats = np.concatenate([test_feats, test_CF_feats], axis=1)
     
-    #confidence_rich_test = compute_confidence(allLearners_rich, rich_test_feats)
-    confidence_rich_test = compute_confidence_par(allLearners_rich, rich_test_feats)
+    confidence_rich_test = compute_confidence(allLearners_rich, rich_test_feats)
+    #confidence_rich_test = compute_confidence_par(allLearners_rich, rich_test_feats)
     pred = np.argmax(confidence_rich_test, axis=1)
 
     testUnique = np.unique(test_labels)[:N_LAB]
