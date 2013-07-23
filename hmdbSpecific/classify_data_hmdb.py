@@ -56,7 +56,7 @@ def getHMDBsplits(table_fname, vidName, vidMode, n_samples = N_SAMPLES, n_featur
     labels_test = []
 
 #import ipdb; ipdb.set_trace()
-
+    
     exctCnt = 0
     pbar = start_progressbar(len(trVidName), '%i train features' % (len(trVidName)))
     for i, vid in enumerate(trVidName):
