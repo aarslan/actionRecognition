@@ -246,10 +246,17 @@ def normalizeWF(wf):
 #------------------------------------------------------------------------------#
 
 def get_contextual_matlab(conf,Wsz):
+    
+    import platform
+        if platform.node() != 'g6':
+            dataPath = '/Users/aarslan/Brown/auto_context'
+        else:
+            dataPath = '/home/aarslan/prj/data/auto_context'
+    
     print 'computing context features for windows size: ', str(Wsz)
     tic = time.time()
     session = MatlabSession()
-    session.run('cd /Users/aarslan/Brown/auto_context')
+    session.run('cd ', dataPath)
     session.putvalue('conf',conf)
     session.putvalue('Wsz',np.array([Wsz], dtype='float64'))
     session.run('B = ctxtFeat(conf, Wsz)')
