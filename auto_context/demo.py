@@ -147,7 +147,7 @@ def compute_confidence_par(allLearners, dada):
     lab_confidence = np.zeros([dada.shape[0], len(allLearners)])
     tic = time.time()
     #import ipdb;ipdb.set_trace()
-    print 'producing weighted outputs IN PARALLEL' % len(allLearners)
+    print 'producing weighted outputs IN PARALLEL'
     
     mem = Memory(cachedir='tmp')
     classif_RBF2 = mem.cache(confidence_par)
