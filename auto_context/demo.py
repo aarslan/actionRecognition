@@ -127,7 +127,7 @@ def compute_confidence(allLearners, dada):
     lab_confidence = np.zeros([dada.shape[0], len(allLearners)])
     tic = time.time()
     #import ipdb;ipdb.set_trace()
-    pbar = start_progressbar(len(allLearners), '%i producing weighted outputs' % len(allLearners)
+    pbar = start_progressbar(len(allLearners), '%i producing weighted outputs' % len(allLearners))
     
     for ii,thisLab in enumerate(allLearners):
         res = np.zeros([dada.shape[0]])
