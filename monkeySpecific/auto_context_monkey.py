@@ -38,16 +38,16 @@ def strip_features(level, features):
     
     import platform
     if platform.node() != 'g6':
-        splitPath = '/Users/aarslan/Desktop/myFeats.mat'
+        mat_path = '/Users/aarslan/Desktop/myFeats.mat'
     else:
-        splitPath = '/home/aarslan/prj/data/monkey_new_ClassifData/myFeats.mat'
+        mat_path = '/home/aarslan/prj/data/monkey_new_ClassifData/myFeats.mat'
 
     
-    ff = sp.io.loadmat('/Users/aarslan/Desktop/myFeats.mat')
-    allSets = ff.keys()
-    allSets.sort()
-    allSets = allSets[3:]
-    take = np.squeeze(ff[str(allSets[level])])
+    ff = sp.io.loadmat(mat_path)
+    all_sets = ff.keys()
+    all_sets.sort()
+    all_sets = all_sets[3:]
+    take = np.squeeze(ff[str(all_sets[level])])
     features = features[:,np.append(take, range(-23,-1))]
     print 'stripped data have now ', str(features.shape[1]), ' features'
     return features
