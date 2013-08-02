@@ -29,7 +29,7 @@ learning_rate = 0.00002
 Sample_N = 200
 N_RUNS = 5
 N_LAB = 35
-CLF = 'randomforest' #'adaboost'#
+CLF = 'adaboost'#'randomforest' #
 N_FEATURES = 1441
 
 #------------------------------------------------------------------------------#
@@ -92,10 +92,10 @@ def main():
     
     confidence_orig= ac.compute_confidence(allLearners_orig, orig_feats, CLF)
     
-    orig_CF_35 = ac.get_contextual(confidence_orig, 35) #yeni = orig_CF_75[:,np.squeeze([np.sum(orig_CF_75,axis=0)!= 0])]
+    #orig_CF_35 = ac.get_contextual(confidence_orig, 35) #yeni = orig_CF_75[:,np.squeeze([np.sum(orig_CF_75,axis=0)!= 0])]
     orig_CF_75 = ac.get_contextual(confidence_orig, 75)
-    CF_feats = np.concatenate([orig_CF_35,orig_CF_75], axis = 1)
-    #CF_feats = orig_CF_75
+    #CF_feats = np.concatenate([orig_CF_35,orig_CF_75], axis = 1)
+    CF_feats = orig_CF_75
     
     big_scaler = preprocessing.StandardScaler()
     rich_feats = np.concatenate([orig_feats, CF_feats], axis=1)
@@ -110,10 +110,11 @@ def main():
     test_feats  = small_scaler.transform(test_feats)
     confidence_test = ac.compute_confidence(allLearners_orig, test_feats, CLF)
     
-    test_CF_35 = ac.get_contextual(confidence_test, 35)
+    #test_CF_35 = ac.get_contextual(confidence_test, 35)
     test_CF_75 = ac.get_contextual(confidence_test, 75)
-    test_CF_feats = np.concatenate([test_CF_35, test_CF_75], axis = 1)
-
+    #test_CF_feats = np.concatenate([test_CF_35, test_CF_75], axis = 1)
+    test_CF_feats = test_CF_75
+    
     rich_test_feats = np.concatenate([test_feats, test_CF_feats], axis=1)
 
     print 'Computing confidence for the test and contextual features'
@@ -121,8 +122,8 @@ def main():
     confidence_rich_test = ac.compute_confidence(allLearners_rich, rich_test_feats, CLF)
     pred = np.argmax(confidence_rich_test, axis=1)
 
-    #pred_sur = mk.groupLabels(le.inverse_transform(pred))
-    #test_labels_sur = mk.groupLabels(le.inverse_transform(test_labels))
+    pred_sur = mk.groupLabels(le.inverse_transform(pred))
+    test_labels_sur = mk.groupLabels(le.inverse_transform(test_labels))
     
     pred_sur = le.inverse_transform(pred)
     test_labels_sur = le.inverse_transform(test_labels)
