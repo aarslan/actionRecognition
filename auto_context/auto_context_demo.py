@@ -111,7 +111,7 @@ def train_randomforest(features, labels, n_lab, n_runs, n_estim, n_samples):
         #import ipdb;ipdb.set_trace()
         feats,labs = get_multi_sets(features, labels, used_labels, n_samples)
         #import ipdb;ipdb.set_trace()
-        rfclf = RandomForestClassifier(n_estimators=n_estim, max_depth=6, min_samples_split=4, random_state=0)
+        rfclf = RandomForestClassifier(n_estimators=n_estim, max_depth=16, min_samples_split=16, random_state=0)
         #import ipdb;ipdb.set_trace()
         allLearners.append(rfclf.fit(feats, labs))
     
