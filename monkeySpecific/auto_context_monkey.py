@@ -35,6 +35,14 @@ N_FEATURES = 1441
 #------------------------------------------------------------------------------#
 
 def strip_features(level, features):
+    
+    import platform
+    if platform.node() != 'g6':
+        splitPath = '/Users/aarslan/Desktop/myFeats.mat'
+    else:
+        splitPath = '/home/aarslan/prj/data/monkey_new_ClassifData/myFeats.mat'
+
+    
     ff = sp.io.loadmat('/Users/aarslan/Desktop/myFeats.mat')
     allSets = ff.keys()
     allSets.sort()
