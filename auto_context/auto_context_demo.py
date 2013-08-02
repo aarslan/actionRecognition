@@ -22,7 +22,7 @@ import pylab as pl
 from multiprocessing import Process
 
 #from sklearn import datasets
-from pymatlab.matlab import MatlabSession
+#from pymatlab.matlab import MatlabSession
 
 ACTIONS = ['approach','walk_away','circle','chase','attack','copulation','drink','eat','clean','human','sniff','up','other']
 
