@@ -31,47 +31,16 @@ REGULARIZATION_VALUE = 1E4
 N_SAMPLES = 600# 571741    %GUZEL SONUC 7 sample, 100 feat gamma=0.000001
 N_FEATURES  = 1441 #1000
 N_LIM = 1441
+N_LAB = 15
 l_c = [1E-4, 1E-3, 1E-2, 1E-1, 1, 1E1, 1E2]
 c= 1000
 l_g = pow(2,np.linspace(-15, -5, 7))
-#------------------------------------------------------------------------------#
-def getMonkeySplits(table_fname, splitNo, n_samples = N_SAMPLES, n_features = N_FEATURES):
 
+#------------------------------------------------------------------------------#
+def getMonkeySplits_lim_old(table_fname, splitNo, n_samples = N_SAMPLES, n_features = N_FEATURES):
     
     h5_tr = ta.openFile(table_fname + str(splitNo) + '_train.h5', mode = 'r')
     table_tr = h5_tr.root.input_output_data.readout
-    
-    h5_te = ta.openFile(table_fname + str(splitNo) + '_test.h5', mode = 'r')
-    table_te = h5_te.root.input_output_data.readout
-    print 'Converting arrays to sp'
-    #import ipdb; ipdb.set_trace()
-    features_train = sp.array(table_tr.cols.features)[:,:N_LIM]
-    labels_train = sp.array(table_tr.cols.label)
-    
-    features_test = sp.array(table_te.cols.features)[:,:N_LIM]
-    labels_test = sp.array(table_te.cols.label)
-    #import ipdb; ipdb.set_trace()
-
-#    features_train = sp.array(features_train, dtype = 'uint8')
-#    features_test = sp.array(features_test, dtype = 'uint8')
-#    labels_train = sp.array(labels_train)
-#    labels_test = sp.array(labels_test)
-    print 'Converted'
-    
-    table_tr.flush()
-    table_te.flush()
-    h5_tr.close()
-    h5_te.close()
-    print "feature loading completed"
-    return features_train , labels_train, features_test, labels_test
-
-#------------------------------------------------------------------------------#
-def getMonkeySplits_lim(table_fname, splitNo, n_samples = N_SAMPLES, n_features = N_FEATURES):
-    
-    
-    h5_tr = ta.openFile(table_fname + str(splitNo) + '_train.h5', mode = 'r')
-    table_tr = h5_tr.root.input_output_data.readout
-    
     h5_te = ta.openFile(table_fname + str(splitNo) + '_test.h5', mode = 'r')
     table_te = h5_te.root.input_output_data.readout
     print 'Converting arrays to sp'
@@ -80,11 +49,10 @@ def getMonkeySplits_lim(table_fname, splitNo, n_samples = N_SAMPLES, n_features 
     #KILL UNUSED
     uniqLabels=uniqLabels[uniqLabels!='unused']
     
-    
     labels_train = []
     features_train = []
     exctCnt = 0
-    pbar = start_progressbar(len(uniqLabels), '%i train features' % (len(uniqLabels)))
+    pbar = start_progressbar(len(uniqLabels), [ int(len(uniqLabels)), ' training labels'] )
     for i, thisLab in enumerate(uniqLabels):
         tempLabels = [row['label'] for row in table_tr.where("label == thisLab")]
         try:
@@ -100,30 +68,90 @@ def getMonkeySplits_lim(table_fname, splitNo, n_samples = N_SAMPLES, n_features 
     end_progressbar(pbar)
     print '%d exceptions occured' % (exctCnt)
 
-    features_train = sp.array(features_train)[:,:N_LIM]
+    features_train = sp.array(features_train)[:,:n_features]
     labels_train = sp.array(labels_train)
-            #features_train = sp.array(table_tr.cols.features)[:,:N_LIM]
-            #labels_train = sp.array(table_tr.cols.label)
-    
-    
+
     labels_test = sp.array(table_te.cols.label)
     #import ipdb; ipdb.set_trace()
-    features_test = sp.array(table_te.cols.features)[labels_test!='unused',:N_LIM]
+    features_test = sp.array(table_te.cols.features)[labels_test!='unused',:n_features]
     labels_test=labels_test[labels_test!='unused']
 
-    import ipdb; ipdb.set_trace()
-    #    features_train = sp.array(features_train, dtype = 'uint8')
-    #    features_test = sp.array(features_test, dtype = 'uint8')
-    #    labels_train = sp.array(labels_train)
-    #    labels_test = sp.array(labels_test)
     print 'Converted'
-    
+    #import ipdb; ipdb.set_trace()
     table_tr.flush()
     table_te.flush()
     h5_tr.close()
     h5_te.close()
     print "feature loading completed"
     return features_train , labels_train, features_test, labels_test
+#------------------------------------------------------------------------------#
+def get_monkey_splits_lim(table_fname, splitNo, n_samples = N_SAMPLES, n_features = N_FEATURES, n_lab = N_LAB, label_focus = 'test', contig_labels = True):
+    
+    h5_tr = ta.openFile(table_fname + str(splitNo) + '_train.h5', mode = 'r')
+    table_tr = h5_tr.root.input_output_data.readout
+    h5_te = ta.openFile(table_fname + str(splitNo) + '_test.h5', mode = 'r')
+    table_te = h5_te.root.input_output_data.readout
+    
+    if label_focus == 'test':
+        uniqLabels = np.unique(table_te.cols.label)
+    else:
+        uniqLabels = np.unique(table_tr.cols.label)
+
+    #KILL UNUSED
+    uniqLabels=uniqLabels[uniqLabels!='unused']
+    uniqLabels = uniqLabels[:n_lab]
+    
+    labels_train = []
+    features_train = []
+    exctCnt = 0
+    print 'loading labels based on ', label_focus
+    pbar = start_progressbar(len(uniqLabels), 'fetching %i training labels' %len(uniqLabels))
+    
+    for i, thisLab in enumerate(uniqLabels):
+        tempLabels = [row['label'] for row in table_tr.where("label == thisLab")]
+        if contig_labels:
+                toThis = min(len(tempLabels), n_samples)
+                selInd = range(0,toThis)
+        else:
+            try:
+                selInd = random.sample(range(0,len(tempLabels)), n_samples)
+            except ValueError:
+                selInd = range(0,len(tempLabels))
+                exctCnt = exctCnt+1
+        labels_train = labels_train + [tempLabels[gg] for gg in selInd]
+        tempFeatures = [row['features'][:][:n_features] for row in table_tr.where("label == thisLab")]
+        features_train = features_train + [tempFeatures[gg] for gg in selInd]
+        
+        update_progressbar(pbar, i)
+    
+    end_progressbar(pbar)
+    #import ipdb; ipdb.set_trace()
+    print '%d exceptions occured' % (exctCnt)
+    
+    pbar = start_progressbar(len(uniqLabels), 'fetching %i testing labels' %len(uniqLabels))
+    labels_test = []
+    features_test = []
+    for i, thisLab in enumerate(uniqLabels):
+        tempLabels = [row['label'] for row in table_te.where("label == thisLab")]
+        labels_test = labels_test + tempLabels
+        tempFeatures = [row['features'][:][:n_features] for row in table_te.where("label == thisLab")]
+        features_test = features_test + tempFeatures
+        update_progressbar(pbar, i)
+    end_progressbar(pbar)
+
+    features_train = sp.array(features_train)[:,:n_features]
+    labels_train = sp.array(labels_train)
+    features_test = sp.array(features_test)[:,:n_features]
+    labels_test = sp.array(labels_test)
+    print 'Converted'
+
+    table_tr.flush()
+    table_te.flush()
+    h5_tr.close()
+    h5_te.close()
+    print "feature loading completed"
+    return features_train , labels_train, features_test, labels_test
+
 
 #------------------------------------------------------------------------------#
 
@@ -170,18 +198,11 @@ def svm_cla_sklearn(features_train, features_test, labels_train, labels_test):
     for i,x in enumerate(label_test_redux):
             labels_test_ix2[i] = list(tru).index(x)
 
-    #if any(bb != bb_):
-    #raise Exception("REDUCED LABELS DONT HAVE THE SAME CLASSES IN THEM")
-    
     cm = confusion_matrix(labels_test_ix2, labels_pred_ix2)
     norm_cm = np.divide(cm.T,sum(cm.T), dtype='float16').T
-#import ipdb; ipdb.set_trace()
+    #import ipdb; ipdb.set_trace()
     print 'the mean across the diagonal is ' + str(np.mean(norm_cm.diagonal()))
-#    pl.matshow(norm_cm)
-#    pl.colorbar()
-#    pl.show()
 
-#alpha = ['ABC', 'DEF', 'GHI', 'JKL']
 
     fig = plt.figure()
     ax = fig.add_subplot(111)
@@ -196,7 +217,6 @@ def svm_cla_sklearn(features_train, features_test, labels_train, labels_test):
 
     plt.show()
     import ipdb; ipdb.set_trace()
-
 
 
 #------------------------------------------------------------------------------#
@@ -256,23 +276,36 @@ def features_preprocessing(features, mean_f = None, std_f = None):
 
 #------------------------------------------------------------------------------#
 def groupLabels(labelSet):
-    
     labelSet[labelSet=='sitturn'] = 'sit'
     labelSet[labelSet=='situp'] = 'sit'
     labelSet[labelSet=='sitdown'] = 'sit'
+    #labelSet[labelSet=='sit_turnhead'] = 'sit'#turnhead
+    #labelSet[labelSet=='situp_turnhead'] = 'sit'#
 
     labelSet[labelSet=='groom_sit'] = 'groom'
-
+    labelSet[labelSet=='groom_situp'] = 'groom'#
+    labelSet[labelSet=='groom_stand'] = 'groom'#
+    labelSet[labelSet=='groom_standfull'] = 'groom'#
+    
     labelSet[labelSet=='rock_sit'] = 'rock'
     labelSet[labelSet=='rock_stand'] = 'rock'
+    labelSet[labelSet=='rock_standfull'] = 'rock'#
+    labelSet[labelSet=='rock_standup'] = 'rock'#
 
-    labelSet[labelSet=='standdown'] = 'stand'
-    labelSet[labelSet=='standfull'] = 'stand'
-    labelSet[labelSet=='standfull_walk'] = 'stand'
-    labelSet[labelSet=='standup'] = 'stand'
+    labelSet[labelSet=='standdown'] = 'standfull'#
+    labelSet[labelSet=='standfull'] = 'standfull'#
+    labelSet[labelSet=='standfull_turn'] = 'standfull'#
+    labelSet[labelSet=='standfull_turnhead'] = 'standfull'#
+    labelSet[labelSet=='standfull_walk'] = 'standfull'#
+
+    labelSet[labelSet=='standturn'] = 'stand'#
+    
+    labelSet[labelSet=='standup'] = 'standup'#
+    labelSet[labelSet=='standup_turn'] = 'standup'#
+    
     #import ipdb; ipdb.set_trace()
-    return labelSet
 
+    return labelSet
 
 #------------------------------------------------------------------------------#
 def main():
@@ -289,10 +322,9 @@ def main():
     n_features = args.n_features
     n_samples = args.n_samples
     splitNo = args.split_no
-    
-    
+        
     #features_train , labels_train, features_test, labels_test = getMonkeySplits(table_fname, splitNo, n_samples, n_features)
-    features_train , labels_train, features_test, labels_test = getMonkeySplits_lim(table_fname, splitNo, n_samples, n_features)
+    features_train , labels_train, features_test, labels_test = get_monkey_splits_lim(table_fname, splitNo, n_samples, n_features)
     svm_cla_sklearn(features_train, features_test, labels_train, labels_test)
     #svm_cla_sklearn_feat_sel(features_train, features_test, labels_train, labels_test)
 

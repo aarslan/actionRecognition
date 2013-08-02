@@ -28,7 +28,7 @@ N_FEATURES  = 10000 #1000
 l_c = [1E-4, 1E-3, 1E-2, 1E-1, 1, 1E1, 1E2]
 l_g = pow(2,np.linspace(-15, -5,16))
 #------------------------------------------------------------------------------#
-def getHMDBsplits(table_fname, vidName, vidMode, n_samples = N_SAMPLES, n_features = N_FEATURES):
+def get_HMDB_splits(table_fname, vidName, vidMode, n_samples = N_SAMPLES, n_features = N_FEATURES):
 
     h5 = ta.openFile(table_fname, mode = 'r')
     table = h5.root.input_output_data.readout
@@ -179,7 +179,7 @@ def features_preprocessing(features, mean_f = None, std_f = None):
 
 #------------------------------------------------------------------------------#
 
-def parseHMDBSplits(splitPath, splitNo):
+def parse_HMDB_splits(splitPath, splitNo):
     import glob
     files = glob.glob( splitPath + '*'+ str(splitNo) +'.txt')
     vidMode = []
@@ -218,9 +218,9 @@ def main():
         splitPath = '/Users/aarslan/Desktop/hmdb_ClassifData/testTrainMulti_7030_splits/'
     else:
         splitPath = '/home/aarslan/prj/data/hmdb_ClassifData/testTrainMulti_7030_splits/'
-    vidName, vidMode = parseHMDBSplits(splitPath, 1)
+    vidName, vidMode = parse_HMDB_splits(splitPath, 1)
     
-    features_train , labels_train, features_test, labels_test = getHMDBsplits(table_fname, vidName, vidMode, n_samples, n_features)
+    features_train , labels_train, features_test, labels_test = get_HMDB_splits(table_fname, vidName, vidMode, n_samples, n_features)
     #svm_cla(features_train, features_test, labels_train, labels_test)
     svm_cla_sklearn_feat_sel(features_train, features_test, labels_train, labels_test)
     #svm_cla_sklearn_feat_sel(features_train, features_test, labels_train, labels_test)
