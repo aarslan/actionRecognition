@@ -25,11 +25,11 @@ import classify_data_monkey as mk
 import auto_context_demo as ac
 
 N_ESTIM = 10
-learning_rate = 0.00002
-Sample_N = 200
+learning_rate = 0.002
+Sample_N = 600
 N_RUNS = 5
 N_LAB = 35
-CLF = 'adaboost'#'randomforest' #
+CLF = 'randomforest' #'adaboost'#
 N_FEATURES = 1441
 
 #------------------------------------------------------------------------------#
@@ -87,8 +87,8 @@ def main():
     orig_feats = small_scaler.fit_transform(orig_feats)
     
     print 'FIRST ROUND: training with original features'
-    allLearners_orig, used_labels = ac.train_adaboost(orig_feats,orig_labels,learning_rate, N_LAB, N_RUNS, N_ESTIM, Sample_N)
-    #allLearners_orig, used_labels = ac.train_randomforest(orig_feats,orig_labels, N_LAB, N_RUNS, N_ESTIM, Sample_N)
+    #allLearners_orig, used_labels = ac.train_adaboost(orig_feats,orig_labels,learning_rate, N_LAB, N_RUNS, N_ESTIM, Sample_N)
+    allLearners_orig, used_labels = ac.train_randomforest(orig_feats,orig_labels, N_LAB, N_RUNS, N_ESTIM, Sample_N)
     
     confidence_orig= ac.compute_confidence(allLearners_orig, orig_feats, CLF)
     
@@ -102,8 +102,8 @@ def main():
     #import ipdb; ipdb.set_trace()
     rich_feats = big_scaler.fit_transform(rich_feats)
     print 'SECOND ROUND: training with original and contextual features'
-    allLearners_rich, dumb = ac.train_adaboost(rich_feats, orig_labels, learning_rate, N_LAB, N_RUNS, N_ESTIM, Sample_N)
-    #allLearners_rich, dumb = ac.train_randomforest(rich_feats, orig_labels, N_LAB, N_RUNS, N_ESTIM, Sample_N)
+    #allLearners_rich, dumb = ac.train_adaboost(rich_feats, orig_labels, learning_rate, N_LAB, N_RUNS, N_ESTIM, Sample_N)
+    allLearners_rich, dumb = ac.train_randomforest(rich_feats, orig_labels, N_LAB, N_RUNS, N_ESTIM, Sample_N)
 
     print 'Computing confidence for the test features'
     test_feats= test_feats.astype(np.float64)
