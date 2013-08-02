@@ -26,7 +26,7 @@ import auto_context_demo as ac
 
 N_ESTIM = 10
 learning_rate = 0.00002
-Sample_N = 100
+Sample_N = 200
 N_RUNS = 5
 N_LAB = 35
 CLF = 'randomforest' #'adaboost'#
