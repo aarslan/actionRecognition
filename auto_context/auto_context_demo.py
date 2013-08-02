@@ -195,7 +195,7 @@ def compute_confidence(allLearners, dada, classifierType):
         end_progressbar(pbar)
     
     if classifierType == 'randomforest':
-        import ipdb;ipdb.set_trace()
+        #import ipdb;ipdb.set_trace()
         lab_confidence = np.zeros((dada.shape[0],len(allLearners[0].classes_)), dtype='float64')
         pbar = start_progressbar(len(allLearners), '%i producing weighted outputs' % len(allLearners[0].classes_))
         for ii, thisRun in enumerate(allLearners):
