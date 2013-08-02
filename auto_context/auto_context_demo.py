@@ -83,7 +83,7 @@ def train_adaboost(features, labels, learning_rate, n_lab, n_runs, n_estim, n_sa
             feats,labs = get_binary_sets(features, labels, targetLab, n_samples)
             #print 'fitting stump'
             #import ipdb;ipdb.set_trace()
-            baseClf = DecisionTreeClassifier(max_depth=1, min_samples_leaf=10, min_samples_split=10)
+            baseClf = DecisionTreeClassifier(max_depth=1, min_samples_leaf=4, min_samples_split=4)
             baseClf.fit(feats, labs)
             ada_real = AdaBoostClassifier( base_estimator=baseClf, learning_rate=learning_rate,
                                       n_estimators=n_estim,

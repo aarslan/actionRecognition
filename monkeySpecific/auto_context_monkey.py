@@ -122,8 +122,8 @@ def main():
     confidence_rich_test = ac.compute_confidence(allLearners_rich, rich_test_feats, CLF)
     pred = np.argmax(confidence_rich_test, axis=1)
 
-    pred_sur = mk.groupLabels(le.inverse_transform(pred))
-    test_labels_sur = mk.groupLabels(le.inverse_transform(test_labels))
+#    pred_sur = mk.groupLabels(le.inverse_transform(pred))
+#    test_labels_sur = mk.groupLabels(le.inverse_transform(test_labels))
     
     pred_sur = le.inverse_transform(pred)
     test_labels_sur = le.inverse_transform(test_labels)
@@ -150,10 +150,12 @@ def main():
     
     confidence_rich_train = ac.compute_confidence(allLearners_rich, rich_feats, CLF)
     pred_train = np.argmax(confidence_rich_train, axis=1)
-    #pred_train_sur = mk.groupLabels(le.inverse_transform(pred_train))
-    #train_labels_sur = mk.groupLabels(le.inverse_transform(orig_labels))
-    pred_train_sur = le.inverse_transform(pred_train)
-    train_labels_sur = le.inverse_transform(orig_labels)
+    
+    pred_train_sur = mk.groupLabels(le.inverse_transform(pred_train))
+    train_labels_sur = mk.groupLabels(le.inverse_transform(orig_labels))
+    
+    #pred_train_sur = le.inverse_transform(pred_train)
+    #train_labels_sur = le.inverse_transform(orig_labels)
     
     cm = confusion_matrix(train_labels_sur, pred_train_sur)
     norm_cm = np.divide(cm.T,sum(cm.T), dtype='float16').T
