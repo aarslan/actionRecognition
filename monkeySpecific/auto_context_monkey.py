@@ -24,8 +24,8 @@ import pylab as pl
 import classify_data_monkey as mk
 import auto_context_demo as ac
 
-N_ESTIM = 400
-learning_rate = 0.002
+N_ESTIM = 10
+learning_rate = 1.
 Sample_N = 600
 N_RUNS = 5
 N_LAB = 35
