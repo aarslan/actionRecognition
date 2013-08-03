@@ -25,8 +25,6 @@ from aux_functions import confidence_par
 #from sklearn import datasets
 #from pymatlab.matlab import MatlabSession
 
-ACTIONS = ['approach','walk_away','circle','chase','attack','copulation','drink','eat','clean','human','sniff','up','other']
-
 
 #------------------------------------------------------------------------------#
 def load_training(table_path, splitNo, trainOrTest):
