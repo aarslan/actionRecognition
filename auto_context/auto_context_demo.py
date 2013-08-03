@@ -20,6 +20,7 @@ import time
 import argparse
 import pylab as pl
 from multiprocessing import Process
+from aux_functions import confidence_par
 
 #from sklearn import datasets
 #from pymatlab.matlab import MatlabSession
@@ -173,13 +174,13 @@ def get_multi_sets(features, labels, used_labels, Sample_N):
     return feats,labs
 
 #------------------------------------------------------------------------------#
-def compute_confidence(allLearners, dada, classifierType):
+def compute_confidence(allLearners, dada, classifier_type):
     #import ipdb;ipdb.set_trace()
     
     tic = time.time()
     #import ipdb;ipdb.set_trace()
     
-    if classifierType == 'adaboost':
+    if classifier_type == 'adaboost':
         lab_confidence = np.zeros([dada.shape[0], len(allLearners)], dtype='float64')
         pbar = start_progressbar(len(allLearners), '%i producing weighted outputs' % len(allLearners))
         for ii,thisLab in enumerate(allLearners):
@@ -194,7 +195,7 @@ def compute_confidence(allLearners, dada, classifierType):
             update_progressbar(pbar, ii)
         end_progressbar(pbar)
     
-    if classifierType == 'randomforest':
+    if classifier_type == 'randomforest':
         #import ipdb;ipdb.set_trace()
         lab_confidence = np.zeros((dada.shape[0],len(allLearners[0].classes_)), dtype='float64')
         pbar = start_progressbar(len(allLearners), '%i producing weighted outputs' % len(allLearners[0].classes_))
@@ -206,30 +207,25 @@ def compute_confidence(allLearners, dada, classifierType):
     return lab_confidence
 
 #------------------------------------------------------------------------------#
-def compute_confidence_par2(allLearners, dada):
-    from multiprocessing import Process
-    nthreads = len(allLearners)
-    def worker(allLearners,dada, outdict):
-        for n, thisLab in enumerate(allLearners):
-            outdict[n] = confidante(thisLab, dada)
+def compute_confidence_par(allLearners, samples, classifier_type):
+    from joblib import Parallel, delayed
+    from joblib import load, dump
+    import tempfile
+    import shutil
+    import os
+    folder = tempfile.mkdtemp()
+    samples_name = os.path.join(folder, 'samples')
+    dump(samples, samples_name)
+    samples = load(samples_name, mmap_mode='r')
     
-    threads = []
-    outs = [{} for i in range(nthreads)]
-    
-    for i in range(nthreads):
-        # Create each thread, passing it its chunk of numbers to factor
-        # and output dict.
-        t = Process(target=worker,
-                             args=(allLearners,dada,outs[i]))
-        threads.append(t)
-        t.start()
-    
-    # Wait for all threads to finish
-    for t in threads:
-        t.join()
-    
-    # Merge all partial output dicts into a single dict and return it
-    return {k: v for out_d in outs for k, v in out_d.iteritems()}
+    try:
+        out = Parallel(n_jobs=-1)(delayed(confidence_par)(thisLab,ii, samples) for ii,thisLab in enumerate(allLearners))
+        all_conf = np.zeros((len(out[0][0]),len(out)), dtype='float64')
+        for cnf in out:
+            all_conf[:,cnf[1]] = cnf[0]
+    finally:
+        shutil.rmtree(folder)
+    return all_conf
 
 #------------------------------------------------------------------------------#
 

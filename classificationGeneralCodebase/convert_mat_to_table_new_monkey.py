@@ -80,24 +80,45 @@ def main():
     data_path = args.data_path
     table_basename =  data_path + args.table_basename
     
+#    #this is test
+#    #A
+#    featuresA, labelsA = read_mat_files(data_path+'/a/myData.mat', data_path + '/a/labels.mat')
+#    #B and the rest
+#    featuresB, labelsB = read_mat_files(data_path+ '/b/myData.mat', data_path + '/b/labels.mat')
+#    featuresC, labelsC = read_mat_files(data_path+ '/c/myData.mat', data_path + '/c/labels.mat')
+#    featuresD, labelsD = read_mat_files(data_path+ '/d/myData.mat', data_path + '/d/labels.mat')
+#    
+#    import ipdb; ipdb.set_trace()
+#    create_empty_table(table_basename+'_train.h5')
+#    populate_table(table_basename+'_train.h5', np.concatenate((featuresA, featuresB, featuresC, featuresD )), np.concatenate((labelsA, labelsB, labelsC, labelsD)))
+#
+#    #EF
+#    featuresE, labelsE = read_mat_files(data_path+ '/e/myData.mat', data_path+ '/e/labels.mat')
+#    featuresF, labelsF = read_mat_files(data_path+ '/f/myData.mat', data_path+ '/f/labels.mat')
+#    create_empty_table(table_basename+ '_test.h5')
+#    
+#    populate_table(table_basename+ '_test.h5', np.concatenate((featuresE,featuresF)) ,  np.concatenate((labelsE, labelsF)))
+    
+    
+    
     #this is test
     #A
     featuresA, labelsA = read_mat_files(data_path+'/a/myData.mat', data_path + '/a/labels.mat')
     #B and the rest
     featuresB, labelsB = read_mat_files(data_path+ '/b/myData.mat', data_path + '/b/labels.mat')
-    featuresC, labelsC = read_mat_files(data_path+ '/c/myData.mat', data_path + '/c/labels.mat')
-    featuresD, labelsD = read_mat_files(data_path+ '/d/myData.mat', data_path + '/d/labels.mat')
+    featuresE, labelsE = read_mat_files(data_path+ '/e/myData.mat', data_path + '/e/labels.mat')
     
     import ipdb; ipdb.set_trace()
     create_empty_table(table_basename+'_train.h5')
-    populate_table(table_basename+'_train.h5', np.concatenate((featuresA, featuresB, featuresC, featuresD )), np.concatenate((labelsA, labelsB, labelsC, labelsD)))
-
+    populate_table(table_basename+'_train.h5', np.concatenate((featuresA, featuresB, featuresE)), np.concatenate((labelsA, labelsB, labelsE)))
+    
     #EF
-    featuresE, labelsE = read_mat_files(data_path+ '/e/myData.mat', data_path+ '/e/labels.mat')
-    featuresF, labelsF = read_mat_files(data_path+ '/f/myData.mat', data_path+ '/f/labels.mat')
+    featuresC, labelsC = read_mat_files(data_path+ '/c/myData.mat', data_path+ '/c/labels.mat')
     create_empty_table(table_basename+ '_test.h5')
     
-    populate_table(table_basename+ '_test.h5', np.concatenate((featuresE,featuresF)) ,  np.concatenate((labelsE, labelsF)))
+    populate_table(table_basename+ '_test.h5', featuresC ,  labelsC)
+    
+    
     import ipdb; ipdb.set_trace()
 #------------------------------------------------------------------------------#
 if __name__=="__main__":

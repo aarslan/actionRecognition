@@ -18,8 +18,7 @@ import argparse
 import pylab as pl
 
 
-def confidence_par(allLearners,ii, dada):
-    thisLab = allLearners[ii]:
+def confidence_par(thisLab,ii, dada):
     res = np.zeros([dada.shape[0]])
     for jj, thisLearner in enumerate(thisLab):
         for hh, thisEstimator in enumerate(thisLearner):

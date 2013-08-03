@@ -85,18 +85,20 @@ def getMonkeySplits_lim_old(table_fname, splitNo, n_samples = N_SAMPLES, n_featu
     print "feature loading completed"
     return features_train , labels_train, features_test, labels_test
 #------------------------------------------------------------------------------#
-def get_monkey_splits_lim(table_fname, splitNo, n_samples = N_SAMPLES, n_features = N_FEATURES, n_lab = N_LAB, label_focus = 'test', contig_labels = True):
+def get_monkey_splits_lim(table_fname, splitNo, n_samples = N_SAMPLES, n_features = N_FEATURES, n_lab = N_LAB, contig_labels = True):
     
     h5_tr = ta.openFile(table_fname + str(splitNo) + '_train.h5', mode = 'r')
     table_tr = h5_tr.root.input_output_data.readout
     h5_te = ta.openFile(table_fname + str(splitNo) + '_test.h5', mode = 'r')
     table_te = h5_te.root.input_output_data.readout
     
-    if label_focus == 'test':
-        uniqLabels = np.unique(table_te.cols.label)
-    else:
-        uniqLabels = np.unique(table_tr.cols.label)
+#    if label_focus == 'test':
+#        uniqLabels = np.unique(table_te.cols.label)
+#    else:
+#        uniqLabels = np.unique(table_tr.cols.label)
 
+    uniqLabels = np.intersect1d(np.unique(table_te.cols.label), np.unique(table_tr.cols.label))
+    
     #KILL UNUSED
     uniqLabels=uniqLabels[uniqLabels!='unused']
     uniqLabels = uniqLabels[:n_lab]
@@ -104,7 +106,6 @@ def get_monkey_splits_lim(table_fname, splitNo, n_samples = N_SAMPLES, n_feature
     labels_train = []
     features_train = []
     exctCnt = 0
-    print 'loading labels based on ', label_focus
     pbar = start_progressbar(len(uniqLabels), 'fetching %i training labels' %len(uniqLabels))
     
     for i, thisLab in enumerate(uniqLabels):
