@@ -26,7 +26,7 @@ def confidence_par(thisLab,ii, dada):
     for jj, thisLearner in enumerate(thisLab):
         for hh, thisEstimator in enumerate(thisLearner):
             #multiply the predictions with the weight of the learner
-            res = res+thisEstimator.predict(dada)*thisLearner.estimator_weights_[hh]
+            res = np.array(res+thisEstimator.predict(dada)*thisLearner.estimator_weights_[hh], dtype='float16')
     
     lab_confidence_perii = res
     #print "time taken to produce confidence:", round(time.time() - tic,2), "seconds"

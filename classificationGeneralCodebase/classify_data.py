@@ -6,7 +6,7 @@ import scipy as sp
 
 import hmax
 from hmax.classification import kernel
-from shogun import Kernel, Classifier, Features
+#from shogun import Kernel, Classifier, Features
 from hmax.tools.utils import start_progressbar, update_progressbar, end_progressbar
 import scipy as sp
 import numpy as np
@@ -32,7 +32,7 @@ dtype='|S17')
 
 
 REGULARIZATION_VALUE = 1E4
-N_SAMPLES = 1000
+N_SAMPLES = 10000
 N_FEATURES  = 500
 l_c = [1E-4, 1E-3, 1E-2, 1E-1, 1, 1E1, 1E2]
 #------------------------------------------------------------------------------#
@@ -44,7 +44,8 @@ def split_data_from_table(table_fname, n_samples = N_SAMPLES, n_features = N_FEA
     l_features = table.cols.features
     l_index  = table.cols.frame_index
     l_labels = table.cols.label
-
+    import ipdb; ipdb.set_trace()
+    
     n_samples_total = len(l_labels)
     assert(2*n_samples < n_samples_total)
 
@@ -427,13 +428,9 @@ def main():
             usage: python ./classify_data.py --n_samples 10 --n_features 100 --features_fname ./bla.mat --labels_fname ./bla1.mat""")
     parser.add_argument('--n_features', type=int, default = N_FEATURES, help="""string""")
     parser.add_argument('--n_samples', type=int, default = N_SAMPLES, help="""string""")
-    parser.add_argument('--features_fname', type=str, help="""string""")
     parser.add_argument('--table_fname', type=str, help="""string""")
-    parser.add_argument('--labels_fname', type=str, help="""string""")
     args = parser.parse_args()
 
-    features_fname = args.features_fname
-    labels_fname = args.labels_fname
     table_fname = args.table_fname
     n_features = args.n_features
     n_samples = args.n_samples

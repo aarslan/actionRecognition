@@ -217,7 +217,7 @@ def compute_confidence_par(allLearners, samples, classifier_type):
     samples = load(samples_name, mmap_mode='r')
     
     try:
-        out = Parallel(n_jobs=-1)(delayed(confidence_par)(thisLab,ii, samples) for ii,thisLab in enumerate(allLearners))
+        out = Parallel(n_jobs=2)(delayed(confidence_par)(thisLab,ii, samples) for ii,thisLab in enumerate(allLearners))
         all_conf = np.zeros((len(out[0][0]),len(out)), dtype='float64')
         for cnf in out:
             all_conf[:,cnf[1]] = cnf[0]

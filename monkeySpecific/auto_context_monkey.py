@@ -24,9 +24,9 @@ import pylab as pl
 import classify_data_monkey as mk
 import auto_context_demo as ac
 
-N_ESTIM = 10
+N_ESTIM = 5
 learning_rate = 1.
-Sample_N = 400
+Sample_N = 200
 N_RUNS = 5
 N_LAB = 35 #35
 CLF = 'adaboost'#'randomforest' #
@@ -101,10 +101,10 @@ def main():
     
     
     print 'Getting contextual features'
-    orig_CF_35 = ac.get_contextual(confidence_orig, 35) #yeni = orig_CF_75[:,np.squeeze([np.sum(orig_CF_75,axis=0)!= 0])]
+    #orig_CF_35 = ac.get_contextual(confidence_orig, 35) #yeni = orig_CF_75[:,np.squeeze([np.sum(orig_CF_75,axis=0)!= 0])]
     orig_CF_75 = ac.get_contextual(confidence_orig, 75)
     orig_CF_110 = ac.get_contextual(confidence_orig, 110)
-    CF_feats = np.concatenate([orig_CF_35,orig_CF_75, orig_CF_110], axis = 1)
+    CF_feats = np.concatenate([orig_CF_75, orig_CF_110], axis = 1)
     #CF_feats = orig_CF_75
     #import ipdb; ipdb.set_trace()
     big_scaler = preprocessing.StandardScaler()
@@ -121,10 +121,10 @@ def main():
     confidence_test = ac.compute_confidence_par(allLearners_orig, test_feats, CLF)
     
     print 'Getting contextual features'
-    test_CF_35 = ac.get_contextual(confidence_test, 35)
+    #test_CF_35 = ac.get_contextual(confidence_test, 35)
     test_CF_75 = ac.get_contextual(confidence_test, 75)
     test_CF_110 = ac.get_contextual(confidence_test, 110)
-    test_CF_feats = np.concatenate([test_CF_35, test_CF_75, test_CF_110], axis = 1)
+    test_CF_feats = np.concatenate([test_CF_75, test_CF_110], axis = 1)
     #test_CF_feats = test_CF_75
     
     rich_test_feats = np.concatenate([test_feats, test_CF_feats], axis=1)
