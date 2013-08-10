@@ -23,6 +23,7 @@ import pylab as pl
 #from pymatlab.matlab import MatlabSession
 import classify_data_monkey as mk
 import auto_context_demo as ac
+import pickle
 
 N_ESTIM = 40
 learning_rate = 1.
@@ -132,9 +133,20 @@ def main():
                 'cameras' : ['webcam01', 'webcam02', 'cam01', 'cam02','stereo01', 'stereo02']
                 }
     
-    orig_feats , orig_labels, test_feats, test_labels = get_bfast_splits(table_path, settings, 1000,
+    orig_feats , orig_labels, test_feats, test_labels = get_bfast_splits(table_path, settings, 3000,
                                                                                  N_FEATURES,
                                                                                  contig_labels = True, n_lab = N_LAB)
+    
+
+    feats,labs = get_multi_sets(orig_feats, orig_labels, np.unique(orig_labels), 3000):
+    tic = time.time()
+    selector = LinearSVC(C=0.000008, penalty="l1", dual=False).fit(feats, labs)
+    print "time taken to score data is:", round(time.time() - tic) , "seconds"
+    container = {}
+    container['selector'] = selector
+    pickle.dump(container, open('~/Desktop/oldumulan', 'wb'))
+
+
     import ipdb; ipdb.set_trace()
     le = preprocessing.LabelEncoder()
     le.fit(orig_labels)
