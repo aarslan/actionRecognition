@@ -140,7 +140,7 @@ def main():
 
     feats,labs = ac.get_multi_sets(orig_feats, orig_labels, np.unique(orig_labels), 3000)
     tic = time.time()
-    selector = LinearSVC(C=0.000008, penalty="l1", dual=False).fit(feats, labs)
+    selector = LinearSVC(C=0.000006, penalty="l1", dual=False).fit(feats, labs)
     print "time taken to score data is:", round(time.time() - tic) , "seconds"
     container = {}
     container['selector'] = selector
