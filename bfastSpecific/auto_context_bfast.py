@@ -138,7 +138,7 @@ def main():
                                                                                  contig_labels = True, n_lab = N_LAB)
     
 
-    feats,labs = get_multi_sets(orig_feats, orig_labels, np.unique(orig_labels), 3000)
+    feats,labs = ac.get_multi_sets(orig_feats, orig_labels, np.unique(orig_labels), 3000)
     tic = time.time()
     selector = LinearSVC(C=0.000008, penalty="l1", dual=False).fit(feats, labs)
     print "time taken to score data is:", round(time.time() - tic) , "seconds"
