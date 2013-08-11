@@ -144,7 +144,8 @@ def main():
     print "time taken to score data is:", round(time.time() - tic) , "seconds"
     container = {}
     container['selector'] = selector
-    pickle.dump(container, open('~/Desktop/oldumulan', 'wb'))
+    import ipdb; ipdb.set_trace()
+    pickle.dump(container, open('/home/aarslan/oldumulan', 'wb'))
 
 
     import ipdb; ipdb.set_trace()
