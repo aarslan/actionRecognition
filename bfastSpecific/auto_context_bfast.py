@@ -31,7 +31,7 @@ N_SAMPLES = 5000
 N_RUNS = 5
 N_LAB = 55
 CLF = 'adaboost'#'randomforest' #
-N_FEATURES = 400
+N_FEATURES = 700
 
 #------------------------------------------------------------------------------#
 
