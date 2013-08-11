@@ -130,7 +130,7 @@ def main():
                       'P41','P42','P43','P44','P45', 'P46', 'P47', 'P48', 'P49',
                       'P50', 'P51', 'P52', 'P53', 'P54'],
         'test_p': [ 'P16'], #
-                'cameras' : ['webcam01', 'webcam02', 'cam01', 'cam02','stereo01', 'stereo02']
+                'cameras' : ['webcam01', 'webcam02', 'cam01', 'cam02','stereo01', 'stereo02', 'webcam01mirr', 'webcam02mirr', 'cam01mirr', 'cam02mirr','stereo01mirr', 'stereo02mirr']
                 }
     
     orig_feats , orig_labels, test_feats, test_labels = get_bfast_splits(table_path, settings, 3000,
@@ -138,15 +138,20 @@ def main():
                                                                                  contig_labels = True, n_lab = N_LAB)
     
 
-    feats,labs = ac.get_multi_sets(orig_feats, orig_labels, np.unique(orig_labels), 3000)
-    tic = time.time()
-    selector = LinearSVC(C=0.000006, penalty="l1", dual=False).fit(feats, labs)
-    print "time taken to score data is:", round(time.time() - tic) , "seconds"
-    container = {}
-    container['selector'] = selector
-    import ipdb; ipdb.set_trace()
-    pickle.dump(container, open('/home/aarslan/oldumulan', 'wb'))
-
+    selector_path = '/home/aarslan/oldumulan'
+    if not os.path.exists(selector_path):
+        feats,labs = ac.get_multi_sets(orig_feats, orig_labels, np.unique(orig_labels), 3000)
+        tic = time.time()
+        selector = LinearSVC(C=0.000006, penalty="l1", dual=False).fit(feats, labs)
+        print "time taken to score data is:", round(time.time() - tic) , "seconds"
+        container = {}
+        container['selector'] = selector
+        import ipdb; ipdb.set_trace()
+        pickle.dump(container, open(selector_path, 'wb'))
+    else:
+        import ipdb; ipdb.set_trace()
+        container = pickle.load(open(selector_path, 'rb'))
+        container['selector'].transform(orig_feats)
 
     import ipdb; ipdb.set_trace()
     le = preprocessing.LabelEncoder()
